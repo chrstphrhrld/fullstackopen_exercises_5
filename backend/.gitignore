@@ -1,7 +1,6 @@
 /part3/node_modules/
-.idea/
+/.idea/
 /node_modules/
 part3/.env
 /build
 /.env
-../.idea

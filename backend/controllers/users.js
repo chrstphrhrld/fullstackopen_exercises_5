@@ -4,15 +4,12 @@ const User = require('../models/user')
 
 usersRouter.get('/', async (request, response) => {
 	const users = await User
-		.find({}).populate('blogs', { author: 1, title: 1, url: 1 })
+		.find({}).populate('notes' ,{ content: 1, important: 1 })
+
 	response.json(users)
 })
 usersRouter.post('/', async (request, response) => {
 	const { username, name, password } = request.body
-
-	if (!(username || password) || password.length <= 3) {
-		response.status(404).json({ error: 'username and password must be filled and should have at least three characters' }).end()
-	}
 
 	const saltRounds = 10
 	const passwordHash = await bcrypt.hash(password, saltRounds)
@@ -22,6 +19,7 @@ usersRouter.post('/', async (request, response) => {
 		name,
 		passwordHash,
 	})
+
 	const savedUser = await user.save()
 
 	response.status(201).json(savedUser)
