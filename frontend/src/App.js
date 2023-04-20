@@ -1,89 +1,171 @@
-import React, {useState, useEffect} from "react";
-import Persons from "./components/Persons";
-import Filter from "./components/Filter";
-import PersonForm from "./components/PersonForm";
-import personsService from "./services/persons";
-import Notification from "./components/Notification";
+import {useState, useEffect} from 'react'
+import Note from './components/Note'
+import Notification from './components/Notification'
+import Footer from './components/Footer'
+import noteService from './services/notes'
+import loginService from './services/login'
 
 const App = () => {
-    const [persons, setPersons] = useState([])
-    const [newName, setNewName] = useState('')
-    const [newPhoneNo, setNewPhoneNo] = useState('')
-    const [filter, setFilter] = useState('');
-    const [errorMessage, setErrorMessage] = useState(null)
-    const [errorOccurred, setErrorOccurred] = useState(false);
+	const [notes, setNotes] = useState([])
+	const [newNote, setNewNote] = useState('')
+	const [showAll, setShowAll] = useState(true)
+	const [errorMessage, setErrorMessage] = useState(null)
 
-    useEffect(() => {
-        personsService
-            .getAll()
-            .then(allPersons => setPersons(allPersons))
-    }, []);
+	const [username, setUsername] = useState('')
+	const [password, setPassword] = useState('')
+	const [user, setUser] = useState(null)
 
-    function resetErrorMessage(message, errorOccurred) {
-        setErrorOccurred(errorOccurred)
-        setErrorMessage(message)
-        setTimeout(() => {
-            setErrorMessage(null)
-        }, 5000)
-    }
+	useEffect(() => {
+		noteService
+			.getAll()
+			.then(initialNotes => {
+				setNotes(initialNotes)
+			})
+	}, [])
 
-    const addPerson = (event) => {
-        event.preventDefault()
-        if ((newName === '') && (newPhoneNo === ''))
-            return
+	useEffect(() => {
+		const loggedUserJSON = window.localStorage.getItem('loggedNoteappUser')
+		if (loggedUserJSON) {
+			const user = JSON.parse(loggedUserJSON)
+			setUser(user)
+			noteService.setToken(user.token)
+		}
+	}, [])
 
-        const newPerson = {
-            name: newName,
-            phoneNumber: newPhoneNo,
-        }
+	const handleLogin = async (event) => {
+		event.preventDefault()
 
-        if (persons.find(person => person.name === newPerson.name)) {
-            if (window.confirm(`${newName} ist already added to phonebook, replace old number with a new one?`)) {
-                const bufferPerson = persons.find(p => p.name === newPerson.name)
-                const updatedPerson = {...bufferPerson, phoneNumber: newPhoneNo}
-                personsService
-                    .update(updatedPerson)
-                    .then(retPerson => {
-                        resetErrorMessage(`Changed number for ${newPerson.name} to ${newPerson.phoneNumber}`, false)
-                        setPersons(persons.map(p => p.id !== retPerson.id ? p : retPerson))
-                    })
-                    .catch(() => resetErrorMessage(`Information of ${newPerson.name} has already been removed from server`, true))
-            }
-        } else {
-            personsService
-                .create(newPerson)
-                .then(returnedPerson => {
-                    setPersons(persons.concat(returnedPerson))
-                    resetErrorMessage(`Added ${returnedPerson.name}`, false)
-                })
-                .catch(error => {
-                    console.log(error.response.data.error)
-                    resetErrorMessage(error.response.data.error, true)
-                })
-        }
+		try {
+			const user = await loginService.login({
+				username, password
+			})
 
-        setNewName('')
-        setNewPhoneNo('')
-    }
-    const handleNameOnChange = (event) => setNewName(event.target.value)
-    const handleOnChangePhoneNo = (event) => setNewPhoneNo(event.target.value)
-    const handleOnFilterEntries = (event) => setFilter(event.target.value)
+			window.localStorage.setItem(
+				'loggedNoteappUser', JSON.stringify(user)
+			)
+			noteService.setToken(user.token)
+			setUser(user)
+			setUsername('')
+			setPassword('')
+		} catch (exception) {
+			setErrorMessage('Wrong Credentials')
+			setTimeout(() => {
+				setErrorMessage(null)
+			}, 5000)
+		}
+	}
 
-    const numbersToShow = (filter === '') ? persons : persons.filter((person) =>
-        person.name.toLowerCase().includes(filter.toLowerCase()))
+	const addNote = (event) => {
+		event.preventDefault()
+		const noteObject = {
+			content: newNote,
+			important: Math.random() > 0.5,
+		}
 
-    return (
-        <div>
-            <h1>Phonebook</h1>
-            <Notification message={errorMessage} errorOccurred={errorOccurred}/>
-            <Filter onChangeAction={handleOnFilterEntries}/>
-            <h2>Add a new entry</h2>
-            <PersonForm addPerson={addPerson} newName={newName} newPhoneNo={newPhoneNo}
-                        handleNameOnChange={handleNameOnChange} handleOnChangePhoneNo={handleOnChangePhoneNo}/>
-            <h2>Numbers</h2>
-            <Persons persons={numbersToShow} _person={persons} updatePerson={setPersons}/>
-        </div>
-    )
+		noteService
+			.create(noteObject)
+			.then(returnedNote => {
+				setNotes(notes.concat(returnedNote))
+				setNewNote('')
+			})
+	}
+
+	const handleNoteChange = (event) => {
+		setNewNote(event.target.value)
+	}
+
+	const notesToShow = showAll
+		? notes
+		: notes.filter(note => note.important)
+
+	const toggleImportanceOf = id => {
+		const note = notes.find(n => n.id === id)
+		const changedNote = { ...note, important: !note.important }
+
+		noteService
+			.update(id, changedNote).then(returnedNote => {
+			setNotes(notes.map(note => note.id !== id ? note : returnedNote))
+		})
+			.catch(() => {
+				setErrorMessage(
+					`Note '${ note.content }' was already removed from server`
+				)
+				setTimeout(() => {
+					setErrorMessage(null)
+				}, 5000)
+				setNotes(notes.filter(n => n.id !== id))
+			})
+	}
+
+
+	const loginForm = () => (
+		<form onSubmit={ handleLogin }>
+			<div>
+				username
+				<input
+					type="text"
+					value={ username }
+					name="Username"
+					onChange={ ({ target }) => setUsername(target.value) }
+				/>
+			</div>
+			<div>
+				password
+				<input
+					type="password"
+					value={ password }
+					name="Password"
+					onChange={ ({ target }) => setPassword(target.value) }
+				/>
+			</div>
+			<button type="submit">login</button>
+		</form>
+	)
+
+	const noteForm = () => (
+		<form onSubmit={ addNote }>
+			<input
+				value={ newNote }
+				onChange={ handleNoteChange }
+			/>
+			<button type="submit">save</button>
+		</form>
+	)
+
+	return (
+		<div>
+			<h1>Notes app</h1>
+			<Notification message={ errorMessage }/>
+
+			{ !user && loginForm() }
+			{ user && <div>
+				<p>{ user.name } logged in</p>
+				{ noteForm() }
+			</div> }
+
+			<div>
+				<button onClick={ () => setShowAll(!showAll) }>
+					show { showAll ? 'important' : 'all' }
+				</button>
+			</div>
+			<ul>
+				<ul>
+					{ notesToShow.map(note =>
+						<Note
+							key={ note.id }
+							note={ note }
+							toggleImportance={ () => toggleImportanceOf(note.id) }
+						/>
+					) }
+				</ul>
+			</ul>
+			<form onSubmit={ addNote }>
+				<input value={ newNote } onChange={ handleNoteChange }/>
+				<button type="submit">save</button>
+			</form>
+			<Footer/>
+		</div>
+	)
 }
 
 export default App
