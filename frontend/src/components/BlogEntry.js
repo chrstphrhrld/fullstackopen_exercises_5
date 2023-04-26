@@ -1,12 +1,13 @@
 import {useState} from "react";
 import blogService from '../services/blogs'
 
-const BlogEntry = ({ setUpdatedBlogs, errorSuccessHandler }) => {
+const BlogEntry = ({ setUpdatedBlogs, errorSuccessHandler, setVisibility }) => {
 	const [title, setTitle] = useState('');
 	const [author, setAuthor] = useState('');
 	const [url, setUrl] = useState('');
 
 	const handleOnSubmit = async (event) => {
+		setVisibility()
 		event.preventDefault()
 		const newBlogEntry = {
 			title: title,

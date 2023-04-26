@@ -1,17 +1,24 @@
-import {useState, useEffect} from 'react'
+import {useState, useEffect, useRef} from 'react'
 import Blog from './components/Blog'
 import blogService from './services/blogs'
 import loginService from './services/login'
 import BlogEntry from "./components/BlogEntry";
 import Notification from "./components/Notification";
+import Toggleable from "./components/Togglable";
+import blogEntry from "./components/BlogEntry";
+import LoginForm from "./components/LoginForm";
 
 const App = () => {
 	const [blogs, setBlogs] = useState([])
+
 	const [username, setUsername] = useState('')
 	const [password, setPassword] = useState('')
 	const [user, setUser] = useState(null)
+
 	const [errorMessage, setErrorMessage] = useState(null)
-	const [errorOccurred, setErrorOccurred] = useState(false);
+	const [errorOccurred, setErrorOccurred] = useState(false)
+
+	const blogEntryToggleRef = useRef()
 
 	useEffect(() => {
 		const loggedUserJSON = window.localStorage.getItem('loggedBlogappUser')
@@ -23,39 +30,13 @@ const App = () => {
 		}
 	}, [])
 
-	function resetErrorMessage(message, errorOccurred) {
+	const resetErrorMessage = (message, errorOccurred) => {
 		setErrorOccurred(errorOccurred)
 		setErrorMessage(message)
 		setTimeout(() => {
 			setErrorMessage(null)
 		}, 5000)
 	}
-
-	const loginForm = () => (
-		<div>
-			<h1>log in to application</h1>
-			<Notification message={ errorMessage } errorOccurred={ errorOccurred }/>
-			<form onSubmit={ handleLogin }>
-				<div>
-					username
-					<input
-						name='username'
-						type='text'
-						onChange={ ({ target }) => setUsername(target.value) }
-					/>
-				</div>
-				<div>
-					password
-					<input
-						name='password'
-						type='password'
-						onChange={ ({ target }) => setPassword(target.value) }
-					/>
-				</div>
-				<button type='submit'>login</button>
-			</form>
-		</div>
-	)
 
 	const handleLogin = async (event) => {
 		event.preventDefault()
@@ -70,6 +51,7 @@ const App = () => {
 			setPassword('')
 			setUsername('')
 			blogService.getAll().then(blogs => setBlogs(blogs))
+
 		} catch (exception) {
 			resetErrorMessage('wrong username or password', true)
 		}
@@ -83,20 +65,30 @@ const App = () => {
 
 	return (
 		<div>
-			{ !user && loginForm() }
+			<Notification message={ errorMessage } errorOccurred={ errorOccurred }/>
+			{ !user && <Toggleable buttonLabel='log in to the application'>
+				<LoginForm username={ username } password={ password } handleSubmit={ handleLogin }
+				           handlePasswordChange={ setPassword } handleUsernameChange={ setUsername }/>
+			</Toggleable> }
 			{ user &&
 				<div>
 					<h2>blogs</h2>
 					<p>{ user.name } is logged in
 						<button onClick={ handleLogout }>logout</button>
 					</p>
-					<Notification message={ errorMessage } errorOccurred={ errorOccurred }/>
 					<h2>create new</h2>
-					<BlogEntry setUpdatedBlogs={ setBlogs } errorSuccessHandler={ resetErrorMessage }/>
-					{ blogs.map(blog =>
-						<Blog key={ blog.id } blog={ blog }/>
-					) }
-				</div> }
+					<Toggleable buttonLabel='new blog entry' ref={ blogEntryToggleRef }>
+						<BlogEntry setUpdatedBlogs={ setBlogs } errorSuccessHandler={ resetErrorMessage }
+							setVisibility={ blogEntryToggleRef.current.toggleVisibility() }
+						/>
+					</Toggleable>
+					{
+						blogs.map(blog =>
+							<Blog key={ blog.id } blog={ blog }/>
+						)
+					}
+				</div>
+			}
 		</div>
 	)
 }
