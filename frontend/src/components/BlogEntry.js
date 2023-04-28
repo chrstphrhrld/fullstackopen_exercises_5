@@ -1,23 +1,20 @@
 import {useState} from "react";
 import blogService from '../services/blogs'
 
-const BlogEntry = ({ setUpdatedBlogs, errorSuccessHandler, setVisibility }) => {
+const BlogEntry = ({ addNewBlogEntry }) => {
 	const [title, setTitle] = useState('');
 	const [author, setAuthor] = useState('');
 	const [url, setUrl] = useState('');
 
-	const handleOnSubmit = async (event) => {
-		setVisibility()
+	const createNewBlogEntry = (event) => {
 		event.preventDefault()
+
 		const newBlogEntry = {
 			title: title,
 			author: author,
 			url: url
 		}
-
-		await blogService.create(newBlogEntry)
-		blogService.getAll().then(blogs => setUpdatedBlogs(blogs))
-		errorSuccessHandler(`${ title } by ${ author } added`, false)
+		addNewBlogEntry(newBlogEntry)
 		setTitle('')
 		setAuthor('')
 		setUrl('')
@@ -25,14 +22,14 @@ const BlogEntry = ({ setUpdatedBlogs, errorSuccessHandler, setVisibility }) => {
 
 	return (
 		<div>
-			<form onSubmit={ handleOnSubmit }>
+			<form onSubmit={ createNewBlogEntry }>
 				<p>title: <input type='text' name='title' onChange={ ({ target }) => setTitle(target.value) }
 				                 value={ title }/></p>
 				<p>author: <input type='text' name='author' onChange={ ({ target }) => setAuthor(target.value) }
 				                  value={ author }/></p>
 				<p>url: <input type='text' name='url' onChange={ ({ target }) => setUrl(target.value) }
 				               value={ url }/></p>
-				<button type='submit'>create</button>
+				<button className='buttonStyle' type='submit'>create</button>
 			</form>
 		</div>
 	)

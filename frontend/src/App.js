@@ -7,6 +7,7 @@ import Notification from "./components/Notification";
 import Toggleable from "./components/Togglable";
 import blogEntry from "./components/BlogEntry";
 import LoginForm from "./components/LoginForm";
+import {queryHelpers} from "@testing-library/react";
 
 const App = () => {
 	const [blogs, setBlogs] = useState([])
@@ -63,6 +64,19 @@ const App = () => {
 		setUser(null)
 	};
 
+	const addNewBlogEntry = async (newBlogEntry) => {
+		const response = await blogService.create(newBlogEntry)
+		setBlogs(blogs.concat(response))
+		resetErrorMessage(`${ newBlogEntry.title } by ${ newBlogEntry.author } added`, false)
+		blogEntryToggleRef.current.toggleVisibility()
+	}
+
+	const updateLikesOnBlogEntry = async (updatedBlogEntry) => {
+		await blogService.update(updatedBlogEntry.id, updatedBlogEntry)
+		blogService.getAll().then(b => setBlogs(b))
+	}
+
+
 	return (
 		<div>
 			<Notification message={ errorMessage } errorOccurred={ errorOccurred }/>
@@ -74,17 +88,15 @@ const App = () => {
 				<div>
 					<h2>blogs</h2>
 					<p>{ user.name } is logged in
-						<button onClick={ handleLogout }>logout</button>
+						<button className='buttonStyle' onClick={ handleLogout }>logout</button>
 					</p>
 					<h2>create new</h2>
 					<Toggleable buttonLabel='new blog entry' ref={ blogEntryToggleRef }>
-						<BlogEntry setUpdatedBlogs={ setBlogs } errorSuccessHandler={ resetErrorMessage }
-							setVisibility={ blogEntryToggleRef.current.toggleVisibility() }
-						/>
+						<BlogEntry addNewBlogEntry={ addNewBlogEntry }/>
 					</Toggleable>
 					{
 						blogs.map(blog =>
-							<Blog key={ blog.id } blog={ blog }/>
+							<Blog key={ blog.id } blog={ blog } updateLikesOnBlogEntry={ updateLikesOnBlogEntry }/>
 						)
 					}
 				</div>

@@ -3,6 +3,7 @@ const Blog = require('../models/blog')
 const User = require('../models/user')
 const jwt = require('jsonwebtoken')
 const config = require('../utils/config')
+const mongoose = require("mongoose");
 
 blogRouter.get('/', async (request, response) => {
 	const blogs = await Blog
@@ -44,9 +45,12 @@ blogRouter.post('/', async (request, response) => {
 	}
 })
 
-blogRouter.post('/:id', async (req, res) => {
-	const result = await Blog.findByIdAndUpdate(req.params.id, req.body, { new: true })
-	res.status(201).json(result)
+blogRouter.put('/:id', async (request, response) => {
+	const result = await Blog.findByIdAndUpdate(request.params.id, {
+		...request.body,
+		user: mongoose.Types.ObjectId(request.body.user)
+	}, { new: true })
+	response.status(201).json(result)
 })
 
 blogRouter.delete('/:id', async (request, response) => {
