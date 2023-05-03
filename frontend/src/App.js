@@ -1,26 +1,24 @@
-import {useState, useEffect, useRef} from 'react'
+import { useState, useEffect, useRef } from 'react'
 import Note from './components/Note'
 import Notification from './components/Notification'
 import Footer from './components/Footer'
 import noteService from './services/notes'
 import loginService from './services/login'
-import LoginForm from "./components/LoginForm";
-import Togglable from "./components/Togglable";
-import note from "./components/Note";
-import NoteForm from "./components/NoteForm";
+import LoginForm from './components/LoginForm'
+import Togglable from './components/Togglable'
+import NoteForm from './components/NoteForm'
 
 const App = () => {
 	const [notes, setNotes] = useState([])
-	const [newNote, setNewNote] = useState('')
+	const [, setNewNote] = useState('')
 	const [showAll, setShowAll] = useState(true)
 	const [errorMessage, setErrorMessage] = useState(null)
-	const [loginVisible, setLoginVisible] = useState(false)
 
 	const [username, setUsername] = useState('')
 	const [password, setPassword] = useState('')
 	const [user, setUser] = useState(null)
 
-	const notesFromRef = useRef();
+	const notesFromRef = useRef()
 
 	useEffect(() => {
 		noteService
@@ -82,8 +80,8 @@ const App = () => {
 
 		noteService
 			.update(id, changedNote).then(returnedNote => {
-			setNotes(notes.map(note => note.id !== id ? note : returnedNote))
-		})
+				setNotes(notes.map(note => note.id !== id ? note : returnedNote))
+			})
 			.catch(() => {
 				setErrorMessage(
 					`Note '${ note.content }' was already removed from server`
