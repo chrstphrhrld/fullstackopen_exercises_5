@@ -1,13 +1,11 @@
-import {useState, useEffect, useRef} from 'react'
+import { useState, useEffect, useRef } from 'react'
 import Blog from './components/Blog'
 import blogService from './services/blogs'
 import loginService from './services/login'
-import BlogEntry from "./components/BlogEntry";
-import Notification from "./components/Notification";
-import Toggleable from "./components/Togglable";
-import blogEntry from "./components/BlogEntry";
-import LoginForm from "./components/LoginForm";
-import {queryHelpers} from "@testing-library/react";
+import BlogEntry from './components/BlogEntry'
+import Notification from './components/Notification'
+import Toggleable from './components/Togglable'
+import LoginForm from './components/LoginForm'
 
 const App = () => {
 	const [blogs, setBlogs] = useState([])
@@ -62,7 +60,7 @@ const App = () => {
 		window.localStorage.removeItem('loggedBlogappUser')
 		resetErrorMessage(`${ user.name } logged out`, false)
 		setUser(null)
-	};
+	}
 
 	const addNewBlogEntry = async (newBlogEntry) => {
 		const response = await blogService.create(newBlogEntry)
@@ -104,7 +102,7 @@ const App = () => {
 							blogA.likes > blogB.likes ? -1 : 1
 						)).map(blog =>
 							<Blog key={ blog.id } blog={ blog } updateLikesOnBlogEntry={ updateLikesOnBlogEntry }
-							      removeBlogEntryById={ removeBlogEntryById } userId={ user.username}/>
+							      removeBlogEntryById={ removeBlogEntryById } userId={ user.username }/>
 						)
 					}
 				</div>

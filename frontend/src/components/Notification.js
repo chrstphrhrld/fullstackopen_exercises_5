@@ -1,5 +1,5 @@
 
-const Notification = ({message, errorOccurred}) => {
+const Notification = ({ message, errorOccurred }) => {
 	const error = {
 		color: 'red',
 		background: 'lightgrey',

@@ -1,10 +1,9 @@
-import {useState} from "react";
-import blogService from '../services/blogs'
+import { useState } from 'react'
 
 const BlogEntry = ({ addNewBlogEntry }) => {
-	const [title, setTitle] = useState('');
-	const [author, setAuthor] = useState('');
-	const [url, setUrl] = useState('');
+	const [title, setTitle] = useState('')
+	const [author, setAuthor] = useState('')
+	const [url, setUrl] = useState('')
 
 	const createNewBlogEntry = (event) => {
 		event.preventDefault()

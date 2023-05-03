@@ -1,11 +1,4 @@
-import styling from '../index.css'
-
 const BlogEntryDetails = ({ blog, updatedLikesOnBlogEntry, removeBlogEntryById, username }) => {
-
-	const urlStyle = {
-		paddingBottom: 10,
-		fontFamily: 'Monserat'
-	}
 
 	const handleOnLikesClick = async (event) => {
 		event.preventDefault()
@@ -18,7 +11,7 @@ const BlogEntryDetails = ({ blog, updatedLikesOnBlogEntry, removeBlogEntryById, 
 			return
 		console.log(blog.id)
 		removeBlogEntryById(blog.id)
-	};
+	}
 
 	return (
 		<div>

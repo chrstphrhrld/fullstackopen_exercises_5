@@ -1,8 +1,8 @@
-import {useState} from "react";
-import BlogEntryDetails from "./BlogEntryDetails";
+import { useState } from 'react'
+import BlogEntryDetails from './BlogEntryDetails'
 
 const Blog = ({ blog, updateLikesOnBlogEntry, removeBlogEntryById, username }) => {
-	const [viewDetails, setViewDetails] = useState(false);
+	const [viewDetails, setViewDetails] = useState(false)
 
 	const blogStyle = {
 		paddingTop: 10,
