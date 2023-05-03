@@ -1,7 +1,7 @@
 import {useState} from "react";
 import BlogEntryDetails from "./BlogEntryDetails";
 
-const Blog = ({ blog, updateLikesOnBlogEntry }) => {
+const Blog = ({ blog, updateLikesOnBlogEntry, removeBlogEntryById, username }) => {
 	const [viewDetails, setViewDetails] = useState(false);
 
 	const blogStyle = {
@@ -17,14 +17,14 @@ const Blog = ({ blog, updateLikesOnBlogEntry }) => {
 
 	return (
 		<div style={ blogStyle }>
-
 			<div>
 				{ blog.title }
 				<button className='buttonStyle'
 				        onClick={ () => setViewDetails(!viewDetails) }> { viewDetails ? 'hide' : 'view' }
 				</button>
 				{ viewDetails &&
-					<BlogEntryDetails blog={ blog } updatedLikesOnBlogEntry={ updateLikesOnBlogEntry }/>
+					<BlogEntryDetails blog={ blog } updatedLikesOnBlogEntry={ updateLikesOnBlogEntry }
+					                  removeBlogEntryById={ removeBlogEntryById } username={ username }/>
 				}
 			</div>
 		</div>

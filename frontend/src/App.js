@@ -76,6 +76,10 @@ const App = () => {
 		blogService.getAll().then(b => setBlogs(b))
 	}
 
+	const removeBlogEntryById = async (blogId) => {
+		await blogService.deleteById(blogId)
+		setBlogs(blogs.filter(b => b.id !== blogId))
+	}
 
 	return (
 		<div>
@@ -95,8 +99,12 @@ const App = () => {
 						<BlogEntry addNewBlogEntry={ addNewBlogEntry }/>
 					</Toggleable>
 					{
-						blogs.map(blog =>
-							<Blog key={ blog.id } blog={ blog } updateLikesOnBlogEntry={ updateLikesOnBlogEntry }/>
+
+						blogs.sort((blogA, blogB) => (
+							blogA.likes > blogB.likes ? -1 : 1
+						)).map(blog =>
+							<Blog key={ blog.id } blog={ blog } updateLikesOnBlogEntry={ updateLikesOnBlogEntry }
+							      removeBlogEntryById={ removeBlogEntryById } userId={ user.username}/>
 						)
 					}
 				</div>

@@ -54,6 +54,7 @@ blogRouter.put('/:id', async (request, response) => {
 })
 
 blogRouter.delete('/:id', async (request, response) => {
+	console.log(request.params.id)
 	const blogToRemove = await Blog.findById(request.params.id)
 	if (!blogToRemove) {
 		response.status(404).json({ error: 'requested blog entry not found' }).end()
