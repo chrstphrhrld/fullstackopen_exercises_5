@@ -28,8 +28,6 @@ describe('should test if blog data is rendered and displayed correctly in Blog L
 	})
 
 	test('should check that the blog\'s URL and the number of likes are shown when the show button is clicked', async () => {
-		const mockHandler = jest.fn()
-
 		const { container } = render(<Blog blog={ blogEntry } userId='admin'/>)
 
 		const user = userEvent.setup()
@@ -47,7 +45,7 @@ describe('should test if blog data is rendered and displayed correctly in Blog L
 	test('should check, that if the like button is clicked twice, event handler received two clicks', async () => {
 		const mockHandler = jest.fn()
 
-		const { container } = render(<Blog blog={ blogEntry } userId='admin' updateLikesOnBlogEntry={ mockHandler }/>)
+		render(<Blog blog={ blogEntry } userId='admin' updateLikesOnBlogEntry={ mockHandler }/>)
 
 		const user = userEvent.setup()
 		let button = screen.getByText('view')
