@@ -1,4 +1,4 @@
-const BlogEntryDetails = ({ blog, updatedLikesOnBlogEntry, removeBlogEntryById, username }) => {
+const BlogEntryDetails = ({ blog, updatedLikesOnBlogEntry, removeBlogEntryById, showRemoveButton }) => {
 
 	const handleOnLikesClick = async (event) => {
 		event.preventDefault()
@@ -22,7 +22,7 @@ const BlogEntryDetails = ({ blog, updatedLikesOnBlogEntry, removeBlogEntryById, 
 			<button className='buttonStyle' onClick={ handleOnLikesClick }>like</button>
 			<br/>
 			{ blog.author }<br/>
-			<button className='buttonStyle' style={ { display: username === blog.user.username ? '' : 'none' } }
+			<button className='buttonStyle' style={ { display: showRemoveButton ? '' : 'none' } }
 			        onClick={ handleOnRemoveClick }>
 				remove
 			</button>

@@ -20,14 +20,14 @@ const BlogEntry = ({ addNewBlogEntry }) => {
 	}
 
 	return (
-		<div>
+		<div placeholder='Blog Entry Input Form'>
 			<form onSubmit={ createNewBlogEntry }>
 				<p>title: <input type='text' name='title' onChange={ ({ target }) => setTitle(target.value) }
-				                 value={ title }/></p>
+				                 value={ title } placeholder='title input'/></p>
 				<p>author: <input type='text' name='author' onChange={ ({ target }) => setAuthor(target.value) }
-				                  value={ author }/></p>
+				                  value={ author } placeholder='author input'/></p>
 				<p>url: <input type='text' name='url' onChange={ ({ target }) => setUrl(target.value) }
-				               value={ url }/></p>
+				               value={ url } placeholder='url input'/></p>
 				<button className='buttonStyle' type='submit'>create</button>
 			</form>
 		</div>
