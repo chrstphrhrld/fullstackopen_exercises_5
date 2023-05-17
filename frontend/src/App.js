@@ -20,7 +20,7 @@ const App = () => {
 	const blogEntryToggleRef = useRef()
 
 	useEffect(() => {
-		const loggedUserJSON = window.localStorage.getItem('loggedBlogappUser')
+		const loggedUserJSON = window.localStorage.getItem('loggedBlogAppUser')
 		if (loggedUserJSON) {
 			const user = JSON.parse(loggedUserJSON)
 			setUser(user)
@@ -43,7 +43,7 @@ const App = () => {
 		try {
 			const user = await loginService.login({ username, password })
 
-			window.localStorage.setItem('loggedBlogappUser', JSON.stringify(user))
+			window.localStorage.setItem('loggedBlogAppUser', JSON.stringify(user))
 
 			blogService.setToken(user.token)
 			setUser(user)
@@ -57,7 +57,7 @@ const App = () => {
 	}
 
 	const handleLogout = () => {
-		window.localStorage.removeItem('loggedBlogappUser')
+		window.localStorage.removeItem('loggedBlogAppUser')
 		resetErrorMessage(`${ user.name } logged out`, false)
 		setUser(null)
 	}

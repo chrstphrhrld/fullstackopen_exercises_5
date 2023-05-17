@@ -21,9 +21,11 @@ blogRouter.get('/:id', (request, response, next) => {
 })
 
 blogRouter.post('/', async (request, response) => {
-	const body = (process.env.NODE_ENV === 'test')
-		? request._body
-		: request.body
+	// const body = (process.env.NODE_ENV === 'test')
+	// 	? request._body
+	// 	: request.body
+
+	const body = request.body
 
 	const user = request.user
 
@@ -35,7 +37,6 @@ blogRouter.post('/', async (request, response) => {
 
 	if (body.title && body.author) {
 		const blog = new Blog(updatedBlogEntry())
-
 		const result = await blog.save()
 		user.blogs = user.blogs.concat(result._id)
 		await user.save()
